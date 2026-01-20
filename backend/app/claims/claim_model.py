@@ -1,22 +1,6 @@
 from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
-from uuid import uuid4
 from enum import Enum
-
-'''
-Conditions for valid claims:
-
-1) endpoint must be present
-If Gemini cannot identify one, the claim is discarded.
-
-2) assertion must describe observable behavior
-No implementation details allowed.
-
-3) confidence reflects clarity of extraction, not truth.
-
-4) Claims are additive, not authoritative
-Multiple claims about the same endpoint are allowed.
-'''
 
 #-------------------------ArtifactSource Enum-------------------------------------
 class ArtifactSource(str, Enum):
@@ -40,7 +24,6 @@ class Claim(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     # Class members
-    id: str = Field(default_factory=lambda: str(uuid4()))
     category: ClaimCategory
     endpoint: str
     """
@@ -83,4 +66,8 @@ class Claim(BaseModel):
             self.assertion,
             self.source
         ))
+
+    # To generate a comparison key for identifying similar claims
+    def comparison_key(self) -> tuple[str, ClaimCategory, Optional[str]]:
+        return (self.endpoint, self.category, self.condition)
 #-------------------------Claim Model-------------------------------------

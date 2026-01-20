@@ -1,7 +1,6 @@
 from enum import Enum
 from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
-from uuid import uuid4
 
 #--------------Enum for Evidence Types--------------#
 class EvidenceType(str, Enum):
@@ -16,7 +15,6 @@ class Evidence(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     # class members
-    id: str = Field(default_factory=lambda: str(uuid4()))
     type: EvidenceType
     endpoint: str
     observation: str
