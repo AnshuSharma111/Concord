@@ -7,7 +7,6 @@ class ArtifactSource(str, Enum):
     README = "readme"
     API_SPEC = "api_spec"
     TEST = "test"
-    CODE = "code"
 #-------------------------ArtifactSource Enum-------------------------------------
 
 #-------------------------ClaimCategory Enum-------------------------------------
@@ -56,16 +55,6 @@ class Claim(BaseModel):
             and self.assertion == other.assertion
             and self.source == other.source
         )
-
-    # Hash function to allow usage in sets and as dict keys
-    def __hash__(self) -> int:
-        return hash((
-            self.category,
-            self.endpoint,
-            self.condition,
-            self.assertion,
-            self.source
-        ))
 
     # To generate a comparison key for identifying similar claims
     def comparison_key(self) -> tuple[str, ClaimCategory, Optional[str]]:

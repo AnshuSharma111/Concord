@@ -16,3 +16,5 @@
 ```
 
 4. Each claim has a comparison key, which is a 3-tuple (endpoint, category, condition). This is what allows the claim analysis engine to determine whether 2 claims are about the same canonical artifact.
+
+5. In the future, make sure assertion string is bounded by a template

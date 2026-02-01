@@ -1,5 +1,5 @@
-from .inference import generate_text
+from .inference import generate_structured
 
 __all__ = [
-    "generate_text"
+    "generate_structured",
 ]

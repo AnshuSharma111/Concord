@@ -7,15 +7,20 @@ from backend.app.claims.claim_model import Claim, ClaimCategory
 class FindingKind(str, Enum):
     CONTRADICTION = "contradiction"
     UNVERIFIED = "unverified"
+
     MISSING_TESTS = "missing_tests"
     MISSING_SPEC = "missing_spec"
     MISSING_README = "missing_readme"
+
+    IMPLEMENTATION_ONLY = "implementation_only"
+    DOCUMENTATION_ONLY = "documentation_only"
 # -------------------------FindingKind Enum-------------------------------------
 
 # -------------------------Finding Model-------------------------------------
 class Finding(BaseModel):
     kind: FindingKind
     description: str
+    related_claims: list[Claim] = []
     details: Optional[dict] = None
 # -------------------------Finding Model-------------------------------------
 
