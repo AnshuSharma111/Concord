@@ -4,11 +4,14 @@ import json
 from pathlib import Path
 
 # Add the backend app to the path so we can import our modules
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend', 'app'))
+# Since we're now in backend/app/test/, we need to go up one level to reach backend/app
+script_dir = os.path.dirname(__file__)
+backend_app_dir = os.path.dirname(script_dir)
+sys.path.insert(0, backend_app_dir)
 
-from backend.app.ingest.extract import extract_evidence_from_file
-from backend.app.claims.claim_model import ArtifactSource
-from backend.app.evidence.evidence_model import Evidence, EvidenceType
+from ingest.extract import extract_evidence_from_file
+from claims.claim_model import ArtifactSource
+from evidence.evidence_model import Evidence, EvidenceType
 
 def print_evidence(evidence_list, file_path, file_type):
     """Print evidence in a readable format."""
@@ -19,30 +22,30 @@ def print_evidence(evidence_list, file_path, file_type):
     print(f"{'='*80}")
     
     if not evidence_list:
-        print("❌ No evidence extracted from this file.")
+        print("[X] No evidence extracted from this file.")
         return
     
     for i, evidence in enumerate(evidence_list, 1):
-        print(f"\n📋 EVIDENCE #{i}")
-        print(f"├─ Type: {evidence.type.value}")
-        print(f"├─ Endpoint: {evidence.endpoint}")
-        print(f"├─ Observation: {evidence.observation}")
-        print(f"├─ Source File: {evidence.source_file}")
-        print(f"├─ Source Location: {evidence.source_location}")
-        print(f"└─ Raw Snippet:")
+        print(f"\n[{i}] EVIDENCE #{i}")
+        print(f"|- Type: {evidence.type.value}")
+        print(f"|- Endpoint: {evidence.endpoint}")
+        print(f"|- Observation: {evidence.observation}")
+        print(f"|- Source File: {evidence.source_file}")
+        print(f"|- Source Location: {evidence.source_location}")
+        print(f"'- Raw Snippet:")
         
         # Format the raw snippet nicely
         if evidence.raw_snippet:
             snippet_lines = evidence.raw_snippet.split('\n')
             for line in snippet_lines:
-                print(f"   │ {line}")
+                print(f"   | {line}")
         else:
-            print(f"   │ (No snippet available)")
+            print(f"   | (No snippet available)")
 
 def test_single_file(file_path, file_type):
     """Test extraction on a single file."""
     if not os.path.exists(file_path):
-        print(f"❌ File not found: {file_path}")
+        print(f"[X] File not found: {file_path}")
         return False
     
     try:
@@ -50,7 +53,7 @@ def test_single_file(file_path, file_type):
         print_evidence(evidence_list, file_path, file_type)
         return True
     except Exception as e:
-        print(f"❌ Error extracting evidence from {file_path}: {str(e)}")
+        print(f"[X] Error extracting evidence from {file_path}: {str(e)}")
         import traceback
         traceback.print_exc()
         return False
@@ -97,16 +100,16 @@ def test_directory(directory_path):
                     found_files.append((full_path, ArtifactSource.TEST))
     
     if not found_files:
-        print(f"❌ No recognizable files found in {directory_path}")
+        print(f"[X] No recognizable files found in {directory_path}")
         return
     
-    print(f"🔍 Found {len(found_files)} files to test in {directory_path}")
+    print(f"[*] Found {len(found_files)} files to test in {directory_path}")
     for file_path, file_type in found_files:
         test_single_file(file_path, file_type)
 
 def interactive_mode():
     """Interactive mode for testing individual files."""
-    print("\n🧪 INTERACTIVE EVIDENCE EXTRACTION TESTER")
+    print("\n[*] INTERACTIVE EVIDENCE EXTRACTION TESTER")
     print("=" * 50)
     
     while True:
@@ -136,18 +139,18 @@ def interactive_mode():
             if type_choice in type_map:
                 test_single_file(file_path, type_map[type_choice])
             else:
-                print("❌ Invalid file type choice")
+                print("[X] Invalid file type choice")
         
         elif choice == "2":
             directory_path = input("Enter directory path: ").strip().strip('"')
             test_directory(directory_path)
         
         elif choice == "3":
-            print("👋 Goodbye!")
+            print("Goodbye!")
             break
         
         else:
-            print("❌ Invalid choice")
+            print("[X] Invalid choice")
 
 def main():
     """Main function - handle command line arguments or start interactive mode."""
@@ -163,7 +166,7 @@ def main():
             file_type = ArtifactSource(file_type_str.lower())
             test_single_file(file_path, file_type)
         except ValueError:
-            print(f"❌ Invalid file type: {file_type_str}")
+            print(f"[X] Invalid file type: {file_type_str}")
             print("Valid types: README, API_SPEC, TEST")
     elif len(sys.argv) == 2:
         # Directory path provided
@@ -171,12 +174,12 @@ def main():
         if os.path.isdir(directory_path):
             test_directory(directory_path)
         else:
-            print(f"❌ Not a directory: {directory_path}")
+            print(f"[X] Not a directory: {directory_path}")
     else:
         print("Usage:")
-        print("  python test_extract.py                    # Interactive mode")
-        print("  python test_extract.py <file> <type>      # Test single file")
-        print("  python test_extract.py <directory>        # Test directory")
+        print("  python backend/app/test/test_extract_evidence.py                    # Interactive mode")
+        print("  python backend/app/test/test_extract_evidence.py <file> <type>      # Test single file")
+        print("  python backend/app/test/test_extract_evidence.py <directory>        # Test directory")
         print("")
         print("File types: README, API_SPEC, TEST")
 

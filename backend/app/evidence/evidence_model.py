@@ -8,6 +8,9 @@ class EvidenceType(str, Enum):
     SPEC_RESPONSE = "spec_response"
     SPEC_PARAMETER = "spec_parameter"
     README_STATEMENT = "readme_statement"
+    SPEC_SCHEMA_REF = "spec_schema_ref"
+    SPEC_REQUEST_BODY = "spec_request_body"
+    SPEC_SECURITY = "spec_security"
 #--------------Enum for Evidence Types--------------#
 
 #------------------Evidence Model-------------------#
