@@ -1,17 +1,17 @@
 # Core
-pydantic==2.5.0
+pydantic>=2.5.0
 python-dotenv==1.0.0
 
 # API server (FastAPI with anyio v4 support)
 fastapi>=0.110.0,<1.0.0
 uvicorn[standard]==0.24.0
-python-multipart==0.0.6
+python-multipart>=0.0.6
 
 # Google AI
 google-genai>=1.60.0
 
 # HTTP
-requests==2.31.0
+requests>=2.31.0
 
 # Compatibility
 anyio>=4.8.0,<5.0.0
