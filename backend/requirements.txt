@@ -1,17 +1,20 @@
-# Core dependencies with pinned versions for stable deployment
-protobuf==4.25.1
+# Core dependencies
 pydantic==2.5.0
 python-dotenv==1.0.0
 
-# API server dependencies - pinned for compatibility
+# API server
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 python-multipart==0.0.6
 
-# Additional dependencies - pinned versions
+# Google / AI
 google-genai>=1.60.0
+
+# HTTP
 requests==2.31.0
 
-# Required by dependencies
-typing-extensions==4.8.0
-annotated-types==0.6.0
+# Compatibility / typing
+protobuf>=4.25.1,<5.0.0
+google-api-core>=2.11.0,<3.0.0
+typing-extensions>=4.8.0
+annotated-types>=0.6.0
