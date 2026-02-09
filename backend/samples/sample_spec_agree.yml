@@ -1,0 +1,25 @@
+
+openapi: 3.0.0
+info:
+  title: User API
+  version: "1.0"
+
+paths:
+  /users/{id}:
+    get:
+      summary: Get user
+      responses:
+        "200":
+          description: User exists
+        "404":
+          description: User not found
+
+    put:
+      summary: Update user
+      responses:
+        "200":
+          description: Update successful
+        "404":
+          description: User not found
+        "403":
+          description: Forbidden

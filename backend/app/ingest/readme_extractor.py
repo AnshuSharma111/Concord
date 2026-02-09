@@ -109,6 +109,19 @@ def _find_api_sections(lines: List[str]) -> List[Tuple[int, int, str]]:
         "api", "endpoints", "routes", "rest api", "http api"
     }
 
+    # Also match headers that contain API keywords
+    def is_api_header(header_text: str) -> bool:
+        """Check if header indicates an API section."""
+        # Exact matches
+        if header_text in API_ROOT_HEADERS:
+            return True
+        # Contains 'api' keyword
+        if "api" in header_text:
+            return True
+        # Contains multiple API keywords
+        api_count = sum(1 for kw in API_KEYWORDS if kw in header_text)
+        return api_count >= 2
+
     SIGNAL_THRESHOLD = 2
 
     def classify_header(line: str) -> Tuple[int, bool]:
@@ -147,7 +160,7 @@ def _find_api_sections(lines: List[str]) -> List[Tuple[int, int, str]]:
             if (
                 level > 0
                 and (
-                    header_text in API_ROOT_HEADERS
+                    is_api_header(header_text)
                     or api_signal >= SIGNAL_THRESHOLD
                 )
             ):

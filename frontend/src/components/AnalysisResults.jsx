@@ -36,8 +36,65 @@ function AnalysisResults({ results, onReset, uploadedFiles }) {
   };
 
   const formatAssertion = (assertion) => {
-    // Format assertion names for readability
-    return assertion.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').trim();
+    // Convert technical assertion codes to user-friendly descriptions
+    if (!assertion || typeof assertion !== 'string') return assertion;
+    
+    // Mapping of technical codes to readable descriptions
+    const mappings = {
+      // HTTP Response patterns
+      'OUT_HTTP_200': 'Returns 200 (Success)',
+      'OUT_HTTP_201': 'Returns 201 (Created)',
+      'OUT_HTTP_204': 'Returns 204 (No Content)',
+      'OUT_HTTP_400': 'Returns 400 (Bad Request)',
+      'OUT_HTTP_401': 'Returns 401 (Unauthorized)',
+      'OUT_HTTP_403': 'Returns 403 (Forbidden)',
+      'OUT_HTTP_404': 'Returns 404 (Not Found)',
+      'OUT_HTTP_500': 'Returns 500 (Server Error)',
+      
+      // Error response patterns
+      'ERR_HTTP_400': 'Error: Bad Request (400)',
+      'ERR_HTTP_401': 'Error: Unauthorized (401)',
+      'ERR_HTTP_403': 'Error: Forbidden (403)',
+      'ERR_HTTP_404': 'Error: Not Found (404)',
+      'ERR_HTTP_500': 'Error: Server Error (500)',
+      
+      // Schema and body patterns
+      'OUT_SCHEMA_COMPONENTS': 'Response body schema',
+      'REQUEST_BODY': 'Request body required',
+      'SCHEMA_REF': 'Schema reference',
+      
+      // Authentication patterns
+      'PRE_AUTH_REQUIRED': 'Authentication required',
+      'PRE_AUTH': 'Authentication required',
+      
+      // General patterns
+      'ENDPOINT_EXISTS': 'Endpoint exists',
+      'INPUT_PRECONDITION': 'Input validation',
+      'OUTPUT_GUARANTEE': 'Output guarantee',
+      'ERROR_SEMANTICS': 'Error handling',
+      'IDEMPOTENCY': 'Idempotent operation'
+    };
+    
+    // Check for exact matches first
+    if (mappings[assertion]) {
+      return mappings[assertion];
+    }
+    
+    // Handle partial matches and complex patterns
+    for (const [pattern, description] in Object.entries(mappings)) {
+      if (assertion.includes(pattern)) {
+        return description;
+      }
+    }
+    
+    // Fallback: clean up the original assertion
+    return assertion
+      .replace(/_/g, ' ')
+      .replace(/HTTP(\d+)/gi, 'HTTP $1')
+      .replace(/\b(OUT|ERR|PRE|IN)([A-Z])/g, '$1 $2')
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .replace(/\s+/g, ' ')
+      .trim();
   };
 
   if (!results) return null;
@@ -162,11 +219,11 @@ function AnalysisResults({ results, onReset, uploadedFiles }) {
                   <div className="space-y-1">
                     {unit.assertion_state.assertions.map((assertion, assertionIndex) => (
                       <div key={assertionIndex} className="flex items-center justify-between text-sm">
-                        <span className="font-mono text-blue-800">
+                        <span className="font-medium text-blue-800 break-words">
                           {formatAssertion(assertion.assertion)}
                         </span>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-xs text-blue-600">
+                        <div className="flex items-center space-x-2 flex-shrink-0 ml-2">
+                          <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
                             {assertion.sources.join(', ')}
                           </span>
                           {assertion.is_conflicted && (

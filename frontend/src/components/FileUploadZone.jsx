@@ -45,25 +45,25 @@ function FileUploadZone({
     const baseClasses = "border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer";
     
     if (file) {
-      return `${baseClasses} border-green-300 bg-green-50`;
+      return `${baseClasses} border-green-600 bg-green-900/30`;
     }
     
     if (isDragReject) {
-      return `${baseClasses} border-red-300 bg-red-50`;
+      return `${baseClasses} border-red-600 bg-red-900/30`;
     }
     
     if (isDragActive) {
-      return `${baseClasses} border-primary-300 bg-primary-50`;
+      return `${baseClasses} border-blue-600 bg-blue-900/30`;
     }
     
-    return `${baseClasses} border-gray-300 hover:border-gray-400`;
+    return `${baseClasses} border-gray-600 hover:border-gray-500 bg-gray-800/50`;
   };
 
   return (
     <div className="space-y-3">
       <div className="flex items-center space-x-2">
-        <Icon className="h-5 w-5 text-gray-500" />
-        <h3 className="text-lg font-medium text-gray-900">{title}</h3>
+        <Icon className="h-5 w-5 text-gray-400" />
+        <h3 className="text-lg font-medium text-white">{title}</h3>
       </div>
       
       <div {...getRootProps()} className={getZoneClasses()}>
@@ -74,18 +74,18 @@ function FileUploadZone({
           <div className="space-y-2">
             <CheckCircle className="mx-auto h-8 w-8 text-green-500" />
             <div className="flex items-center justify-center space-x-2">
-              <span className="text-sm font-medium text-green-700">
+              <span className="text-sm font-medium text-green-300">
                 {file.name}
               </span>
               <button
                 onClick={handleRemove}
-                className="text-green-600 hover:text-green-800"
+                className="text-green-400 hover:text-green-300"
                 title="Remove file"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <p className="text-xs text-green-600">
+            <p className="text-xs text-green-400">
               {(file.size / 1024).toFixed(1)} KB • Click to replace
             </p>
           </div>
@@ -95,21 +95,21 @@ function FileUploadZone({
             {isDragReject ? (
               <>
                 <AlertTriangle className="mx-auto h-8 w-8 text-red-500" />
-                <p className="text-sm text-red-600">
+                <p className="text-sm text-red-400">
                   Invalid file type. Expected: {acceptedTypes}
                 </p>
               </>
             ) : (
               <>
-                <Icon className="mx-auto h-8 w-8 text-gray-400" />
+                <Icon className="mx-auto h-8 w-8 text-gray-500" />
                 <div>
-                  <p className="text-sm font-medium text-gray-700">
+                  <p className="text-sm font-medium text-gray-200">
                     {isDragActive ? 'Drop file here...' : 'Drop file or click to upload'}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-400 mt-1">
                     {description}
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-gray-500 mt-1">
                     Max 10MB • {acceptedTypes}
                   </p>
                 </div>

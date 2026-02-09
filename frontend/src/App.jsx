@@ -75,65 +75,40 @@ function App() {
     try {
       const formData = new FormData();
       
-      // Add files to FormData
+      // Add files to FormData with correct field names for backend
       Object.entries(files).forEach(([type, file]) => {
         if (file) {
           formData.append(type, file);
         }
       });
 
-      // For now, we'll simulate the API call since backend integration would need CORS setup
-      // TODO: Replace with actual API call to backend process.py
-      setTimeout(() => {
-        // Mock results based on our three-tier display system
-        setAnalysisResults({
-          behavioral_units: [
-            {
-              endpoint: 'GET /api/users',
-              condition: 'valid request',
-              assertion_state: {
-                assertions: [
-                  { assertion: 'OUT_HTTP_200', sources: ['TEST'], is_conflicted: false }
-                ],
-                has_conflicts: false
-              },
-              source_coverage: { test: true, api_spec: false, readme: false },
-              structural_warnings: ['MISSING_SPEC', 'MISSING_README'],
-              risk_band: 'medium',
-              coverage_score: 0.33,
-              confidence_score: 0.85
-            },
-            {
-              endpoint: 'POST /api/users',
-              condition: 'invalid data',
-              assertion_state: {
-                assertions: [
-                  { assertion: 'ERR_HTTP_400', sources: ['TEST'], is_conflicted: false },
-                  { assertion: 'ERR_HTTP_422', sources: ['API_SPEC'], is_conflicted: true }
-                ],
-                has_conflicts: true
-              },
-              source_coverage: { test: true, api_spec: true, readme: false },
-              structural_warnings: ['CONTRADICTION', 'MISSING_README'],
-              risk_band: 'critical',
-              coverage_score: 0.67,
-              confidence_score: 0.72
-            }
-          ],
-          total_behaviors: 2,
-          total_contradictions: 1,
-          risk_distribution: {
-            critical: 1,
-            high: 0,
-            medium: 1,
-            low: 0
-          }
-        });
-        setIsAnalyzing(false);
-      }, 3000);
+      // Call backend API
+      console.log('🚀 Sending files to backend API...');
+      const response = await fetch('http://localhost:8000/api/analyze', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+        throw new Error(errorData.detail || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const analysisResults = await response.json();
+      console.log('✅ Analysis results received:', analysisResults);
+      
+      setAnalysisResults(analysisResults);
+      setIsAnalyzing(false);
 
     } catch (err) {
-      setError(`Analysis failed: ${err.message}`);
+      console.error('❌ Analysis failed:', err);
+      
+      // Check if it's a network error
+      if (err.message.includes('fetch')) {
+        setError('Cannot connect to analysis server. Make sure the backend is running on localhost:8000');
+      } else {
+        setError(`Analysis failed: ${err.message}`);
+      }
       setIsAnalyzing(false);
     }
   };
@@ -147,7 +122,7 @@ function App() {
   const hasFiles = Object.values(files).some(file => file !== null);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -156,11 +131,11 @@ function App() {
           <div className="space-y-8">
             {/* Upload Instructions */}
             <div className="text-center">
-              <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <Upload className="mx-auto h-12 w-12 text-gray-500 mb-4" />
+              <h2 className="text-2xl font-bold text-white mb-2">
                 Upload Your Codebase Artifacts
               </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
+              <p className="text-gray-300 max-w-2xl mx-auto">
                 Upload README files, API specifications, and test files to analyze behavioral consistency 
                 and identify potential issues across your codebase.
               </p>
@@ -204,14 +179,14 @@ function App() {
 
             {/* Error Display */}
             {error && (
-              <div className="rounded-md bg-red-50 p-4">
+              <div className="rounded-md bg-red-900 border border-red-700 p-4">
                 <div className="flex">
                   <AlertTriangle className="h-5 w-5 text-red-400" />
                   <div className="ml-3">
-                    <h3 className="text-sm font-medium text-red-800">
+                    <h3 className="text-sm font-medium text-red-200">
                       Validation Error
                     </h3>
-                    <div className="mt-2 text-sm text-red-700">
+                    <div className="mt-2 text-sm text-red-300">
                       {error}
                     </div>
                   </div>
@@ -225,8 +200,7 @@ function App() {
                 <button
                   onClick={analyzeFiles}
                   disabled={isAnalyzing}
-                  className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
+                  className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed">
                   {isAnalyzing ? (
                     <>
                       <div className="animate-spin -ml-1 mr-3 h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>

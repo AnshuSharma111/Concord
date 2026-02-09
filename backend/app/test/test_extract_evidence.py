@@ -13,6 +13,60 @@ from ingest.extract import extract_evidence_from_file
 from claims.claim_model import ArtifactSource
 from evidence.evidence_model import Evidence, EvidenceType
 from claims.evidence_to_claim import DeterministicClaimGenerator
+from analysis.analysis import analyse_claims
+from analysis.evaluation import evaluate_bucket, generate_policy_recommendations
+
+def print_analysis(analysis_results, file_path):
+    """Print analysis results in a readable format using evaluation layer."""
+    print(f"\n{'#'*80}")
+    print(f"ANALYSIS RESULTS FOR: {file_path}")
+    print(f"ANALYSIS OBJECTS: {len(analysis_results)}")
+    total_findings = sum(len(a.findings) for a in analysis_results)
+    print(f"TOTAL FINDINGS: {total_findings}")
+    print(f"{'#'*80}")
+    
+    if not analysis_results:
+        print("[X] No analysis results generated.")
+        return
+    
+    # Create evaluations and group by risk level
+    evaluations = [evaluate_bucket(analysis.claims, analysis.findings) for analysis in analysis_results]
+    risk_levels = {'critical': [], 'high': [], 'medium': [], 'low': []}
+    for evaluation in evaluations:
+        risk_levels[evaluation.risk_level].append(evaluation)
+    
+    for risk_level in ['critical', 'high', 'medium', 'low']:
+        evaluations_at_level = risk_levels[risk_level]
+        if not evaluations_at_level:
+            continue
+            
+        print(f"\n{'-'*60}")
+        print(f"{risk_level.upper()} RISK LEVEL ({len(evaluations_at_level)} endpoints)")
+        print(f"{'-'*60}")
+        
+        for i, evaluation in enumerate(evaluations_at_level, 1):
+            print(f"\n[A{i}] ANALYSIS #{i}")
+            print(f"|- Endpoint: {evaluation.endpoint}")
+            print(f"|- Category: {evaluation.category.value}")
+            print(f"|- Condition: {evaluation.condition or 'None'}")
+            print(f"|- Claims: {len(evaluation.claims)}")
+            print(f"|- Coverage Score: {evaluation.coverage_score:.2f}")
+            print(f"|- Confidence Score: {evaluation.confidence_score:.2f}")
+            print(f"|- Risk Level: {evaluation.risk_level}")
+            
+            if evaluation.findings:
+                print(f"|- Findings ({len(evaluation.findings)}):")
+                for j, finding in enumerate(evaluation.findings, 1):
+                    print(f"   [{j}] {finding.kind.value.upper()}: {finding.description}")
+                
+                # Get policy recommendations
+                recommendations = generate_policy_recommendations(evaluation)
+                if recommendations:
+                    print(f"|- Policy Recommendations:")
+                    for rec in recommendations[:3]:  # Show first 3
+                        print(f"   • {rec}")
+            else:
+                print("|- No findings")
 
 def print_claims(claims, rejections, file_path):
     """Print claims and rejections in a readable format."""
@@ -78,7 +132,7 @@ def print_evidence(evidence_list, file_path, file_type):
             print(f"   | (No snippet available)")
 
 def test_single_file(file_path, file_type):
-    """Test extraction and claim generation on a single file."""
+    """Test extraction, claim generation, and analysis on a single file."""
     if not os.path.exists(file_path):
         print(f"[X] File not found: {file_path}")
         return False
@@ -93,8 +147,15 @@ def test_single_file(file_path, file_type):
             claim_generator = DeterministicClaimGenerator()
             claims, rejections = claim_generator.process(evidence_list)
             print_claims(claims, rejections, file_path)
+            
+            # Analyze claims for insights
+            if claims:
+                analysis_results = analyse_claims(claims)
+                print_analysis(analysis_results, file_path)
+            else:
+                print(f"\n[!] No claims generated - skipping analysis")
         else:
-            print(f"\n[!] No evidence found - skipping claim generation")
+            print(f"\n[!] No evidence found - skipping claim generation and analysis")
         
         return True
     except Exception as e:
@@ -153,14 +214,14 @@ def test_directory(directory_path):
         test_single_file(file_path, file_type)
 
 def interactive_mode():
-    """Interactive mode for testing evidence extraction and claim generation."""
-    print("\n[*] INTERACTIVE EVIDENCE EXTRACTION & CLAIM GENERATION TESTER")
-    print("=" * 65)
+    """Interactive mode for testing evidence extraction, claim generation, and analysis."""
+    print("\n[*] INTERACTIVE EVIDENCE → CLAIMS → ANALYSIS TESTER")
+    print("=" * 70)
     
     while True:
         print("\nOptions:")
-        print("1. Test a single file (extract evidence + generate claims)")
-        print("2. Test all files in a directory (extract evidence + generate claims)")
+        print("1. Test a single file (extract evidence + generate claims + analyze)")
+        print("2. Test all files in a directory (extract evidence + generate claims + analyze)")
         print("3. Quit")
         
         choice = input("\nEnter your choice (1-3): ").strip()
@@ -198,7 +259,7 @@ def interactive_mode():
             print("[X] Invalid choice")
 
 def main():
-    """Main function - handle command line arguments or start interactive mode for evidence extraction and claim generation."""
+    """Main function - handle command line arguments or start interactive mode for evidence extraction, claim generation, and analysis."""
     if len(sys.argv) == 1:
         # No arguments - start interactive mode
         interactive_mode()
@@ -228,7 +289,7 @@ def main():
         print("")
         print("File types: README, API_SPEC, TEST")
         print("")
-        print("Note: This will extract evidence AND generate claims from that evidence.")
+        print("Note: This will extract evidence, generate claims, and perform analysis.")
 
 if __name__ == "__main__":
     main()

@@ -16,7 +16,7 @@ class TestContext:
 # NOTE: This extractor intentionally targets Python tests using the `requests` library.
 
 REQUEST_PATTERN = re.compile(
-    r'requests\.(get|post|put|delete|patch)\(\s*f?["\']([^"\']+)["\']',
+    r'(?:requests|client)\.(get|post|put|delete|patch)\(\s*["\']([^"\']+)["\']',
     re.IGNORECASE,
 )
 
