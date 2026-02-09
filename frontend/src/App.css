@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+.upload-zone {
+  transition: all 0.2s ease-in-out;
+}
+
+.upload-zone:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.risk-critical {
+  @apply bg-red-50 border-red-200 text-red-800;
+}
+
+.risk-high {
+  @apply bg-orange-50 border-orange-200 text-orange-800;
+}
+
+.risk-medium {
+  @apply bg-yellow-50 border-yellow-200 text-yellow-800;
+}
+
+.risk-low {
+  @apply bg-green-50 border-green-200 text-green-800;
+}
+
+.finding-badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
