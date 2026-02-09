@@ -8,6 +8,21 @@ Modern software systems often ship with subtle but dangerous inconsistencies bet
 
 **The tool does not verify correctness. It verifies agreement.**
 
+## For Reviewers
+
+- The application has been deployed at: 
+https://concord-otix.onrender.com/
+
+- Before opening the above link, however, please check whether the backend is active or not. Being hosted on the free tier of Render, the application may go cold and therefore may take a minute or two to restart. Please wait until you get an output of form
+
+> {"status":"healthy","api":"online","semantic_engine":"ready","debug_logging":"enabled"}
+
+from the given link:
+https://concord-backend-zhc5.onrender.com/health
+
+- The folowing is the demonstration video:
+https://youtu.be/gz52jO_ZDuk
+
 ## Problem Statement
 
 Teams rely on multiple artifacts to describe system behavior:
