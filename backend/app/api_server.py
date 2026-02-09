@@ -17,7 +17,7 @@ import json
 
 # Import the semantic analysis pipeline
 from app.process import analyze_files, ProcessResult
-from display.display_model import DisplayContext
+from app.display.display_model import DisplayContext
 
 app = FastAPI(
     title="Concord Semantic Analysis API",
