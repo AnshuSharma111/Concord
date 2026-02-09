@@ -33,7 +33,7 @@ from app.analysis.evaluation import evaluate_bucket
 from app.display.display_processor import create_display_context
 
 # Debug logging
-from debug_logger import ProcessLogger
+from app.debug_logger import ProcessLogger
 
 # Models
 from app.evidence.evidence_model import Evidence
