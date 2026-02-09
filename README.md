@@ -243,15 +243,6 @@ The system generates comprehensive debug logs in `backend/debug/`:
 - `process_details_*.txt` - Detailed processing data
 - `session_data_*.json` - Raw analysis data
 
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Make your changes and add tests
-4. Commit: `git commit -am 'Add new feature'`
-5. Push: `git push origin feature-name`
-6. Create a Pull Request
-
 ## Architecture Overview
 
 - **Frontend**: React + Vite for fast development and build
@@ -268,10 +259,6 @@ The system is conservative by design:
 - Silence is surfaced as risk, not error
 
 This prevents hallucinated certainty and builds trust.
-
-## Support
-
-For questions or issues, please [create an issue](../../issues) in this repository.
 
 ---
 
