@@ -14,10 +14,10 @@ from dataclasses import dataclass, asdict
 from contextlib import contextmanager
 
 # Models for type hints
-from evidence.evidence_model import Evidence  
-from claims.claim_model import Claim
-from analysis.analysis_model import AnalysisObject, EvaluationObject
-from display.display_model import DisplayContext
+from app.evidence.evidence_model import Evidence  
+from app.claims.claim_model import Claim
+from app.analysis.analysis_model import AnalysisObject, EvaluationObject
+from app.display.display_model import DisplayContext
 
 
 @dataclass
