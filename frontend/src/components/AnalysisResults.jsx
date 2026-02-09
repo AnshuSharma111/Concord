@@ -235,6 +235,19 @@ function AnalysisResults({ results, onReset, uploadedFiles }) {
                   </div>
                 </div>
 
+                {/* SEMANTIC ANALYSIS - Show for conflicts */}
+                {unit.semantic_description && (
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                    <div className="flex items-center mb-3">
+                      <FileText className="h-4 w-4 text-purple-600 mr-2" />
+                      <span className="text-sm font-medium text-purple-900">Analysis Summary</span>
+                    </div>
+                    <div className="text-sm text-purple-800 leading-relaxed">
+                      {unit.semantic_description}
+                    </div>
+                  </div>
+                )}
+
                 {/* TIER 2: STRUCTURAL WARNINGS */}
                 {unit.structural_warnings.length > 0 && (
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
