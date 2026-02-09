@@ -133,7 +133,7 @@ def extract_test_evidence(file_path: str, content: str) -> List[Evidence]:
                 Evidence(
                     type=EvidenceType.TEST_ASSERTION,
                     endpoint=current_test.current_endpoint,
-                    observation=f"observed HTTP {status_code} in test",
+                    observation=f"observed HTTP {status_code} in test {current_test.name}",
                     source_file=os.path.basename(file_path),
                     source_location=(
                         f"{current_test.name} [line {line_num}]"

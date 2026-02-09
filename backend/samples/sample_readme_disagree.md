@@ -12,4 +12,3 @@ Returns user information.
 Updates an existing user.
 
 - Returns **200 OK** when update succeeds
-- Returns **400 Bad Request** for invalid input

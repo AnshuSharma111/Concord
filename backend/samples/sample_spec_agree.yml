@@ -21,5 +21,3 @@ paths:
           description: Update successful
         "404":
           description: User not found
-        "403":
-          description: Forbidden

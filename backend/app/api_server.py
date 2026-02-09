@@ -178,7 +178,8 @@ async def analyze_files_endpoint(
                     "structural_warnings": warnings_list,
                     "risk_band": risk_band_str,
                     "coverage_score": getattr(unit, 'coverage_score', 0.5),
-                    "confidence_score": getattr(unit, 'confidence_score', 0.5)
+                    "confidence_score": getattr(unit, 'confidence_score', 0.5),
+                    "semantic_description": getattr(unit, 'semantic_description', None)
                 }
                 
                 # Extract assertion state

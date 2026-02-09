@@ -70,6 +70,9 @@ class BehaviorUnitCard(BaseModel):
     confidence_score: Optional[float] = None  
     risk_band: Optional[RiskBand] = None
     
+    # Semantic Description (Human-readable explanation of conflicts)
+    semantic_description: Optional[str] = None
+    
     # Internal data for drill-down
     claims: List[Claim] = []
     findings: List[Finding] = []

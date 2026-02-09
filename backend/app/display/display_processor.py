@@ -8,6 +8,7 @@ from .display_model import (
     EndpointSummary, RiskDrivenView, CoverageView, DisplayContext,
     RiskBand, DisplayTier
 )
+from gemini.inference import generate_semantic_description
 
 # -------------------------Core Transformation Functions-------------------------------------
 
@@ -74,6 +75,38 @@ def create_behavior_unit_card(analysis: AnalysisObject, evaluation: EvaluationOb
     source_coverage = create_source_coverage(analysis.claims)
     structural_warnings = extract_structural_warnings(analysis.findings)
     
+    # Generate semantic description for conflicts
+    semantic_description = None
+    if assertion_state.has_conflicts and analysis.claims:
+        try:
+            # Convert behavioral unit data to dictionary for Gemini
+            behavioral_unit_data = {
+                "endpoint": analysis.endpoint,
+                "condition": analysis.condition,
+                "assertions": [
+                    {
+                        "assertion": assertion.assertion,
+                        "sources": [str(src.value) for src in assertion.sources],
+                        "is_conflicted": assertion.is_conflicted
+                    }
+                    for assertion in assertion_state.assertions
+                ],
+                "has_conflicts": assertion_state.has_conflicts,
+                "source_coverage": {
+                    "test": source_coverage.test,
+                    "api_spec": source_coverage.api_spec, 
+                    "readme": source_coverage.readme
+                },
+                "structural_warnings": [str(warning) for warning in structural_warnings],
+                "risk_level": evaluation.risk_level,
+                "confidence_score": evaluation.confidence_score
+            }
+            
+            semantic_description = generate_semantic_description(behavioral_unit_data)
+        except Exception as e:
+            print(f"Failed to generate semantic description: {e}")
+            semantic_description = None
+    
     return BehaviorUnitCard(
         # Tier 1: Required Truth
         endpoint=analysis.endpoint,
@@ -89,6 +122,9 @@ def create_behavior_unit_card(analysis: AnalysisObject, evaluation: EvaluationOb
         coverage_score=evaluation.coverage_score,
         confidence_score=evaluation.confidence_score,
         risk_band=map_risk_to_band(evaluation.risk_level),
+        
+        # Semantic Description
+        semantic_description=semantic_description,
         
         # Internal data
         claims=analysis.claims,

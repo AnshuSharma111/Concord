@@ -49,10 +49,18 @@ class ProcessLogger:
         self.debug_dir = Path(__file__).parent.parent / "debug"  # backend/debug/ directory
         self.debug_dir.mkdir(exist_ok=True)
         self.log_file = self.debug_dir / f"process_log_{self.session_id}.txt"
+        self.details_file = self.debug_dir / f"process_details_{self.session_id}.txt"
         
         # Initialize log file
         with open(self.log_file, 'w', encoding='utf-8') as f:
             f.write(f"=== CONCORD SEMANTIC ANALYSIS DEBUG LOG ===\n")
+            f.write(f"Session ID: {self.session_id}\n")
+            f.write(f"Start Time: {self.start_time.isoformat()}\n")
+            f.write(f"{'='*80}\n\n")
+        
+        # Initialize detailed log file
+        with open(self.details_file, 'w', encoding='utf-8') as f:
+            f.write(f"=== CONCORD DETAILED PROCESSING DATA ===\n")
             f.write(f"Session ID: {self.session_id}\n")
             f.write(f"Start Time: {self.start_time.isoformat()}\n")
             f.write(f"{'='*80}\n\n")
@@ -150,6 +158,9 @@ class ProcessLogger:
             
         self._log_message(f"   Evidence Summary: {len(evidence_list)} items")
         
+        # Write detailed evidence to separate file
+        self._write_detailed_evidence(evidence_list)
+        
         # Group by source type
         by_source = {}
         for evidence in evidence_list:
@@ -171,6 +182,9 @@ class ProcessLogger:
         if rejections:
             self._log_message(f"   Claims Rejected: {len(rejections)}")
         
+        # Write detailed claims to separate file
+        self._write_detailed_claims(claims, rejections)
+        
         for i, claim in enumerate(claims[:5]):  # Show first 5 claims
             self._log_message(f"      Claim {i+1}: {claim.endpoint}")
             self._log_message(f"         Source: {claim.source.value}")
@@ -182,6 +196,9 @@ class ProcessLogger:
     def log_analysis_details(self, analyses: List[AnalysisObject]):
         """Log detailed analysis information."""
         self._log_message(f"   Analyses Created: {len(analyses)}")
+        
+        # Write detailed analyses to separate file
+        self._write_detailed_analyses(analyses)
         
         for i, analysis in enumerate(analyses[:3]):  # Show first 3 analyses
             findings_count = len(analysis.findings) if analysis.findings else 0
@@ -246,6 +263,7 @@ class ProcessLogger:
         self._write_json_summary(final_result, total_duration_ms)
         
         self._log_message(f"\nDebug log saved to: {self.log_file}")
+        self._log_message(f"Detailed data saved to: {self.details_file}")
         self._log_message(f"JSON summary saved to: {self.log_file.with_suffix('.json')}")
     
     def _log_message(self, message: str):
@@ -290,6 +308,86 @@ class ProcessLogger:
         json_file = self.log_file.with_suffix('.json')
         with open(json_file, 'w', encoding='utf-8') as f:
             json.dump(summary, f, indent=2, default=str, ensure_ascii=False)
+    
+    def _write_detailed_evidence(self, evidence_list: List[Evidence]):
+        """Write detailed evidence information to separate file."""
+        with open(self.details_file, 'a', encoding='utf-8') as f:
+            f.write(f"\n{'='*80}\n")
+            f.write(f"EVIDENCE EXTRACTION DETAILS ({len(evidence_list)} items)\n")
+            f.write(f"{'='*80}\n\n")
+            
+            for i, evidence in enumerate(evidence_list, 1):
+                f.write(f"[Evidence #{i}]\n")
+                f.write(f"  Type: {evidence.type.value if hasattr(evidence.type, 'value') else str(evidence.type)}\n")
+                f.write(f"  Endpoint: {evidence.endpoint}\n")
+                f.write(f"  Observation: {evidence.observation}\n")
+                f.write(f"  Source File: {evidence.source_file}\n")
+                f.write(f"  Source Location: {evidence.source_location}\n")
+                if evidence.raw_snippet:
+                    f.write(f"  Raw Snippet:\n")
+                    for line in evidence.raw_snippet.split('\n')[:10]:  # First 10 lines
+                        f.write(f"    {line}\n")
+                    if len(evidence.raw_snippet.split('\n')) > 10:
+                        x = len(evidence.raw_snippet.split('\n'))
+                        f.write(f"    ... ({x-10} more lines)\n")
+                f.write(f"\n")
+    
+    def _write_detailed_claims(self, claims: List[Claim], rejections: Optional[List] = None):
+        """Write detailed claims information to separate file."""
+        with open(self.details_file, 'a', encoding='utf-8') as f:
+            f.write(f"\n{'='*80}\n")
+            f.write(f"CLAIMS GENERATION DETAILS ({len(claims)} claims)\n")
+            f.write(f"{'='*80}\n\n")
+            
+            for i, claim in enumerate(claims, 1):
+                f.write(f"[Claim #{i}]\n")
+                f.write(f"  Endpoint: {claim.endpoint}\n")
+                f.write(f"  Category: {claim.category.value if hasattr(claim.category, 'value') else str(claim.category)}\n")
+                f.write(f"  Condition: {claim.condition or 'None'}\n")
+                f.write(f"  Assertion: {claim.assertion}\n")
+                f.write(f"  Source: {claim.source.value if hasattr(claim.source, 'value') else str(claim.source)}\n")
+                f.write(f"  Confidence: {claim.confidence:.2f}\n")
+                f.write(f"\n")
+            
+            if rejections:
+                f.write(f"\n{'='*80}\n")
+                f.write(f"CLAIM REJECTIONS ({len(rejections)} rejections)\n")
+                f.write(f"{'='*80}\n\n")
+                
+                for i, rejection in enumerate(rejections, 1):
+                    f.write(f"[Rejection #{i}]\n")
+                    f.write(f"  Phase: {getattr(rejection, 'phase', 'unknown')}\n")
+                    f.write(f"  Reason: {getattr(rejection, 'reason', 'unknown')}\n")
+                    f.write(f"  Data: {getattr(rejection, 'data', 'N/A')}\n")
+                    f.write(f"\n")
+    
+    def _write_detailed_analyses(self, analyses: List[AnalysisObject]):
+        """Write detailed analysis information to separate file."""
+        with open(self.details_file, 'a', encoding='utf-8') as f:
+            f.write(f"\n{'='*80}\n")
+            f.write(f"ANALYSIS DETAILS ({len(analyses)} analysis objects)\n")
+            f.write(f"{'='*80}\n\n")
+            
+            for i, analysis in enumerate(analyses, 1):
+                f.write(f"[Analysis #{i}]\n")
+                f.write(f"  Endpoint: {analysis.endpoint}\n")
+                f.write(f"  Category: {analysis.category.value if hasattr(analysis.category, 'value') else str(analysis.category)}\n")
+                f.write(f"  Condition: {analysis.condition or 'None'}\n")
+                f.write(f"  Claims Count: {len(analysis.claims)}\n")
+                f.write(f"  Findings Count: {len(analysis.findings)}\n")
+                
+                if analysis.claims:
+                    f.write(f"  \n  Claims:\n")
+                    for j, claim in enumerate(analysis.claims, 1):
+                        f.write(f"    {j}. {claim.assertion} (source: {claim.source.value if hasattr(claim.source, 'value') else str(claim.source)})\n")
+                
+                if analysis.findings:
+                    f.write(f"  \n  Findings:\n")
+                    for j, finding in enumerate(analysis.findings, 1):
+                        finding_kind = finding.kind.value if hasattr(finding.kind, 'value') else str(finding.kind)
+                        f.write(f"    {j}. {finding_kind}: {finding.description}\n")
+                
+                f.write(f"\n")
 
 
 class StageContext:

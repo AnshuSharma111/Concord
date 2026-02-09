@@ -145,11 +145,18 @@ def extract_spec_evidence(file_path: str, content: str) -> List[Evidence]:
                     if not isinstance(response_obj, dict):
                         continue
 
+                    # Include description in observation to capture condition information
+                    description = response_obj.get("description", "")
+                    if description:
+                        observation = f"documents possible response {status_code}: {description}"
+                    else:
+                        observation = f"documents possible response {status_code}"
+
                     emit(
                         Evidence(
                             type=EvidenceType.SPEC_RESPONSE,
                             endpoint=endpoint,
-                            observation=f"documents possible response {status_code}",
+                            observation=observation,
                             source_file=source_file,
                             source_location=f"{source_base}.responses.{status_code}",
                             raw_snippet=yaml.safe_dump(response_obj, sort_keys=False),

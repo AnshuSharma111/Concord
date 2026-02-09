@@ -72,7 +72,11 @@ class DeterministicClaimGenerator:
             "does not exist": "NOT_EXISTS",
             "exists": "EXISTS",
             "is valid": "VALID",
-            "is authenticated": "AUTH_TRUE"
+            "is authenticated": "AUTH_TRUE",
+            "is not authorized": "USER_NOT_AUTHORIZED",
+            "not authorized": "USER_NOT_AUTHORIZED",
+            "unauthorized": "USER_NOT_AUTHORIZED",
+            "forbidden": "USER_NOT_AUTHORIZED"
         }
 
     def _determine_source(self, ev: Evidence) -> ArtifactSource:
@@ -133,14 +137,69 @@ class DeterministicClaimGenerator:
 
     # --- Phase 3: Condition Extraction (Safe & Normalized) ---
     def _extract_condition(self, raw_text: str) -> Optional[str]:
-        # Pattern: (Subject) (Predicate)
-        pattern = r"(?i)(?:if|when) ([\w\s]+) (is missing|does not exist|exists|is valid|is authenticated)"
-        match = re.search(pattern, raw_text)
+        # Pattern 1: README style with "when" or "if" prefix (strip "the", "a", "an")
+        pattern1 = r"(?i)(?:if|when) (?:the |a |an )?([\w\s]+) (is missing|does not exist|exists|is valid|is authenticated|is not authorized)"
+        match = re.search(pattern1, raw_text)
         if match:
             subject = match.group(1).strip().replace(" ", "_").upper()
             raw_predicate = match.group(2).lower()
             normalized_predicate = self.CONDITION_NORMALIZER.get(raw_predicate, "UNKNOWN")
             return f"{subject}_{normalized_predicate}"
+        
+        # Pattern 2: Spec style descriptions like "User exists", "User not found" (strip "the", "a", "an")
+        pattern2 = r"(?i)(?:the |a |an )?(?:user|resource|data|entity) (exists|not found|missing|found)"
+        match = re.search(pattern2, raw_text)
+        if match:
+            raw_predicate = match.group(1).lower()
+            # Normalize predicates
+            if raw_predicate == "not found":
+                raw_predicate = "does not exist"
+            elif raw_predicate == "missing":
+                raw_predicate = "does not exist"
+            elif raw_predicate in ["exists", "found"]:
+                raw_predicate = "exists"
+            normalized_predicate = self.CONDITION_NORMALIZER.get(raw_predicate, "UNKNOWN")
+            return f"USER_{normalized_predicate}"
+        
+        # Pattern 3: Test function names like "test_get_user_not_found", "test_put_user_success"
+        pattern3 = r"test[_\w]*(?:user|entity|resource)[_\w]*(not_found|success|forbidden|unauthorized|exists|missing|invalid)"
+        match = re.search(pattern3, raw_text, re.IGNORECASE)
+        if match:
+            condition_hint = match.group(1).lower()
+            # Normalize test condition hints
+            if condition_hint == "not_found":
+                return "USER_NOT_EXISTS"
+            elif condition_hint == "success":
+                return "SUCCESS"
+            elif condition_hint == "exists":
+                return "USER_EXISTS"
+            elif condition_hint == "missing":
+                return "USER_NOT_EXISTS"
+            elif condition_hint in ["forbidden", "unauthorized"]:
+                return "NOT_AUTHORIZED"
+            elif condition_hint == "invalid":
+                return "INVALID"
+        
+        # Pattern 4: Success/failure conditions in README
+        pattern4 = r"(?i)when (?:the )?(?:update|operation|request) (succeeds|fails|is successful)"
+        match = re.search(pattern4, raw_text)
+        if match:
+            outcome = match.group(1).lower()
+            if "success" in outcome or "succeed" in outcome:
+                return "SUCCESS"
+            elif "fail" in outcome:
+                return "FAILURE"
+        
+        # Pattern 5: Spec response descriptions like "Forbidden", "Unauthorized"
+        pattern5 = r"(?i)^(forbidden|unauthorized|not\s+found|not\s+authorized)$"
+        match = re.search(pattern5, raw_text.strip())
+        if match:
+            response_type = match.group(1).lower().replace(" ", "_")
+            if response_type in ["forbidden", "unauthorized", "not_authorized"]:
+                return "USER_NOT_AUTHORIZED"
+            elif response_type == "not_found":
+                return "USER_NOT_EXISTS"
+        
         return None
 
     def process(self, evidence_list: List[Evidence]) -> Tuple[List[Claim], List[ClaimRejection]]:

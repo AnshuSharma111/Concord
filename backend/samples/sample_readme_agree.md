@@ -13,4 +13,3 @@ Updates an existing user.
 
 - Returns **200 OK** when update succeeds
 - Returns **404 Not Found** when the user does not exist
-- Returns **403 Forbidden** when the user is not authorized
