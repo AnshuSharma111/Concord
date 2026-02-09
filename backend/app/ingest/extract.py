@@ -1,5 +1,5 @@
-from claims.claim_model import ArtifactSource
-from evidence.evidence_model import Evidence, EvidenceType
+from app.claims.claim_model import ArtifactSource
+from app.evidence.evidence_model import Evidence, EvidenceType
 from app.ingest.readme_extractor import extract_readme_evidence
 from app.ingest.spec_extractor import extract_spec_evidence
 from app.ingest.test_extractor import extract_test_evidence
