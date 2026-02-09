@@ -10,11 +10,11 @@ backend_app_dir = os.path.dirname(script_dir)
 sys.path.insert(0, backend_app_dir)
 
 from ingest.extract import extract_evidence_from_file
-from claims.claim_model import ArtifactSource
-from evidence.evidence_model import Evidence, EvidenceType
-from claims.evidence_to_claim import DeterministicClaimGenerator
-from analysis.analysis import analyse_claims
-from analysis.evaluation import evaluate_bucket, generate_policy_recommendations
+from app.claims.claim_model import ArtifactSource
+from app.evidence.evidence_model import Evidence, EvidenceType
+from app.claims.evidence_to_claim import DeterministicClaimGenerator
+from app.analysis.analysis import analyse_claims
+from app.analysis.evaluation import evaluate_bucket, generate_policy_recommendations
 
 def print_analysis(analysis_results, file_path):
     """Print analysis results in a readable format using evaluation layer."""

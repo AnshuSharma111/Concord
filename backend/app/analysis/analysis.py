@@ -1,5 +1,5 @@
-from claims.claim_model import Claim, ArtifactSource
-from analysis.analysis_model import AnalysisObject, Finding, FindingKind, EvaluationObject
+from app.claims.claim_model import Claim, ArtifactSource
+from app.analysis.analysis_model import AnalysisObject, Finding, FindingKind, EvaluationObject
 from collections import defaultdict
 from typing import Dict, List, Set, Tuple
 import re

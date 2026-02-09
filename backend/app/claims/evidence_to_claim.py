@@ -1,8 +1,8 @@
 import re
 from typing import List, Optional, Tuple, Dict, Union
 from pydantic import BaseModel, Field
-from claims.claim_model import ArtifactSource, Claim, ClaimCategory
-from evidence.evidence_model import Evidence, EvidenceType
+from app.claims.claim_model import ArtifactSource, Claim, ClaimCategory
+from app.evidence.evidence_model import Evidence, EvidenceType
 
 # --- Updated Models for Transparency ---
 

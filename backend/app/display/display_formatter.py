@@ -3,8 +3,8 @@ from .display_model import (
     BehaviorUnitCard, AssertionInfo, EndpointSummary, 
     RiskDrivenView, CoverageView, DisplayContext, RiskBand
 )
-from analysis.analysis_model import FindingKind
-from claims.claim_model import ArtifactSource
+from app.analysis.analysis_model import FindingKind
+from app.claims.claim_model import ArtifactSource
 
 # -------------------------Formatting Constants-------------------------------------
 

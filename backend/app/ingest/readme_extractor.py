@@ -1,5 +1,5 @@
-from evidence.evidence_model import Evidence, EvidenceType
-from gemini import generate_structured
+from app.evidence.evidence_model import Evidence, EvidenceType
+from app.gemini import generate_structured
 from typing import List, Tuple
 import os
 import re

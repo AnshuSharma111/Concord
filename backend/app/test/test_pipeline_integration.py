@@ -7,11 +7,11 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from claims.claim_model import Claim, ArtifactSource, ClaimCategory
-from analysis.analysis import analyse_claims
-from analysis.evaluation import evaluate_bucket
-from display.display_processor import create_display_context
-from display.display_formatter import (
+from app.claims.claim_model import Claim, ArtifactSource, ClaimCategory
+from app.analysis.analysis import analyse_claims
+from app.analysis.evaluation import evaluate_bucket
+from app.display.display_processor import create_display_context
+from app.display.display_formatter import (
     format_canonical_unit_card, format_endpoint_summary,
     format_risk_driven_view, format_coverage_view, format_display_summary
 )

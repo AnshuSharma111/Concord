@@ -1,5 +1,5 @@
-from claims.claim_model import Claim, ArtifactSource
-from analysis.analysis_model import Finding, EvaluationObject, FindingKind
+from app.claims.claim_model import Claim, ArtifactSource
+from app.analysis.analysis_model import Finding, EvaluationObject, FindingKind
 from typing import List, Set
 import re
 

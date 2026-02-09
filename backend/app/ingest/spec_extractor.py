@@ -1,4 +1,4 @@
-from evidence.evidence_model import Evidence, EvidenceType
+from app.evidence.evidence_model import Evidence, EvidenceType
 from typing import List
 import os
 import json

@@ -1,7 +1,7 @@
 from enum import Enum
 from pydantic import BaseModel
 from typing import Optional
-from claims.claim_model import Claim, ClaimCategory
+from app.claims.claim_model import Claim, ClaimCategory
 
 # -------------------------FindingKind Enum-------------------------------------
 class FindingKind(str, Enum):

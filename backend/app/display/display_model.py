@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 from typing import List, Dict, Optional, Set
 from enum import Enum
-from claims.claim_model import Claim, ArtifactSource, ClaimCategory
-from analysis.analysis_model import Finding, FindingKind
+from app.claims.claim_model import Claim, ArtifactSource, ClaimCategory
+from app.analysis.analysis_model import Finding, FindingKind
 
 # -------------------------Display Tier Enums-------------------------------------
 class DisplayTier(str, Enum):

@@ -1,8 +1,8 @@
 from claims.claim_model import ArtifactSource
 from evidence.evidence_model import Evidence, EvidenceType
-from ingest.readme_extractor import extract_readme_evidence
-from ingest.spec_extractor import extract_spec_evidence
-from ingest.test_extractor import extract_test_evidence
+from app.ingest.readme_extractor import extract_readme_evidence
+from app.ingest.spec_extractor import extract_spec_evidence
+from app.ingest.test_extractor import extract_test_evidence
 from typing import List
 import os
 

@@ -4,11 +4,11 @@ import os
 # Add backend directory to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from claims.claim_model import Claim, ArtifactSource, ClaimCategory
-from analysis.analysis import analyse_claims
-from analysis.evaluation import evaluate_bucket
-from display.display_processor import create_display_context
-from display.display_formatter import format_complete_display, format_canonical_unit_card
+from app.claims.claim_model import Claim, ArtifactSource, ClaimCategory
+from app.analysis.analysis import analyse_claims
+from app.analysis.evaluation import evaluate_bucket
+from app.display.display_processor import create_display_context
+from app.display.display_formatter import format_complete_display, format_canonical_unit_card
 
 print("Testing Three-Tier Information Display System")
 print("=" * 60)

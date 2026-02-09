@@ -1,14 +1,14 @@
 from typing import List, Dict, Set
 from collections import defaultdict
-from claims.claim_model import Claim, ArtifactSource, ClaimCategory
-from analysis.analysis_model import AnalysisObject, Finding, FindingKind
-from analysis.evaluation import EvaluationObject
+from app.claims.claim_model import Claim, ArtifactSource, ClaimCategory
+from app.analysis.analysis_model import AnalysisObject, Finding, FindingKind
+from app.analysis.evaluation import EvaluationObject
 from .display_model import (
     BehaviorUnitCard, AssertionInfo, AssertionState, SourceCoverage,
     EndpointSummary, RiskDrivenView, CoverageView, DisplayContext,
     RiskBand, DisplayTier
 )
-from gemini.inference import generate_semantic_description
+from app.gemini.inference import generate_semantic_description
 
 # -------------------------Core Transformation Functions-------------------------------------
 
