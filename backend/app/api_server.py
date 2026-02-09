@@ -16,7 +16,7 @@ import shutil
 import json
 
 # Import the semantic analysis pipeline
-from process import analyze_files, ProcessResult
+from app.process import analyze_files, ProcessResult
 from display.display_model import DisplayContext
 
 app = FastAPI(
