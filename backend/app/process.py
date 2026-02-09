@@ -26,20 +26,20 @@ import os
 from dataclasses import dataclass
 
 # Pipeline stage imports
-from ingest.extract import extract_evidence_from_file
-from claims.evidence_to_claim import DeterministicClaimGenerator
-from analysis.analysis import analyse_claims
-from analysis.evaluation import evaluate_bucket
-from display.display_processor import create_display_context
+from app.ingest.extract import extract_evidence_from_file
+from app.claims.evidence_to_claim import DeterministicClaimGenerator
+from app.analysis.analysis import analyse_claims
+from app.analysis.evaluation import evaluate_bucket
+from app.display.display_processor import create_display_context
 
 # Debug logging
 from debug_logger import ProcessLogger
 
 # Models
-from evidence.evidence_model import Evidence
-from claims.claim_model import Claim, ArtifactSource
-from analysis.analysis_model import AnalysisObject, EvaluationObject
-from display.display_model import DisplayContext
+from app.evidence.evidence_model import Evidence
+from app.claims.claim_model import Claim, ArtifactSource
+from app.analysis.analysis_model import AnalysisObject, EvaluationObject
+from app.display.display_model import DisplayContext
 
 @dataclass
 class ProcessResult:
