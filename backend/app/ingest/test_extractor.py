@@ -38,6 +38,9 @@ def normalize_path(path: str) -> str:
     Normalize concrete paths to a conservative parameterized form.
     No semantic inference is performed.
     """
+    # Strip f-string variable references like {self.base_url}, {base_url}, etc.
+    path = re.sub(r'\{[^}]*base_url[^}]*\}', '', path)
+    
     # Strip scheme + host
     path = re.sub(r'^https?://[^/]+', '', path)
 
@@ -54,6 +57,13 @@ def normalize_path(path: str) -> str:
 
     # Replace numeric segments
     path = re.sub(r'/\d+', '/{id}', path)
+
+    # Ensure path starts with /
+    if not path.startswith('/'):
+        path = '/' + path
+        
+    # Clean up any double slashes
+    path = re.sub(r'/+', '/', path)
 
     return path
 

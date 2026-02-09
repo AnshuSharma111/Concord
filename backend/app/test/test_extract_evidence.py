@@ -12,11 +12,46 @@ sys.path.insert(0, backend_app_dir)
 from ingest.extract import extract_evidence_from_file
 from claims.claim_model import ArtifactSource
 from evidence.evidence_model import Evidence, EvidenceType
+from claims.evidence_to_claim import DeterministicClaimGenerator
+
+def print_claims(claims, rejections, file_path):
+    """Print claims and rejections in a readable format."""
+    print(f"\n{'*'*80}")
+    print(f"CLAIM GENERATION RESULTS FOR: {file_path}")
+    print(f"CLAIMS GENERATED: {len(claims)}")
+    print(f"REJECTIONS: {len(rejections)}")
+    print(f"{'*'*80}")
+    
+    if claims:
+        print(f"\n{'-'*60}")
+        print("GENERATED CLAIMS:")
+        print(f"{'-'*60}")
+        
+        for i, claim in enumerate(claims, 1):
+            print(f"\n[C{i}] CLAIM #{i}")
+            print(f"|- Category: {claim.category.value}")
+            print(f"|- Endpoint: {claim.endpoint}")
+            print(f"|- Assertion: {claim.assertion}")
+            print(f"|- Condition: {claim.condition or 'None'}")
+            print(f"|- Source: {claim.source.value}")
+            print(f"|- Confidence: {claim.confidence:.2f}")
+    
+    if rejections:
+        print(f"\n{'-'*60}")
+        print("REJECTIONS:")
+        print(f"{'-'*60}")
+        
+        for i, rejection in enumerate(rejections, 1):
+            print(f"\n[R{i}] REJECTION #{i}")
+            print(f"|- Phase: {rejection.phase}")
+            print(f"|- Reason: {rejection.reason}")
+            print(f"|- Evidence ID: {rejection.evidence_id}")
+            print(f"|- Raw Data: {rejection.raw_data}")
 
 def print_evidence(evidence_list, file_path, file_type):
     """Print evidence in a readable format."""
     print(f"\n{'='*80}")
-    print(f"RESULTS FOR: {file_path}")
+    print(f"EVIDENCE EXTRACTION RESULTS FOR: {file_path}")
     print(f"FILE TYPE: {file_type.value}")
     print(f"EVIDENCE COUNT: {len(evidence_list)}")
     print(f"{'='*80}")
@@ -26,7 +61,7 @@ def print_evidence(evidence_list, file_path, file_type):
         return
     
     for i, evidence in enumerate(evidence_list, 1):
-        print(f"\n[{i}] EVIDENCE #{i}")
+        print(f"\n[E{i}] EVIDENCE #{i}")
         print(f"|- Type: {evidence.type.value}")
         print(f"|- Endpoint: {evidence.endpoint}")
         print(f"|- Observation: {evidence.observation}")
@@ -43,23 +78,33 @@ def print_evidence(evidence_list, file_path, file_type):
             print(f"   | (No snippet available)")
 
 def test_single_file(file_path, file_type):
-    """Test extraction on a single file."""
+    """Test extraction and claim generation on a single file."""
     if not os.path.exists(file_path):
         print(f"[X] File not found: {file_path}")
         return False
     
     try:
+        # Extract evidence
         evidence_list = extract_evidence_from_file(file_path, file_type)
         print_evidence(evidence_list, file_path, file_type)
+        
+        # Generate claims from evidence
+        if evidence_list:
+            claim_generator = DeterministicClaimGenerator()
+            claims, rejections = claim_generator.process(evidence_list)
+            print_claims(claims, rejections, file_path)
+        else:
+            print(f"\n[!] No evidence found - skipping claim generation")
+        
         return True
     except Exception as e:
-        print(f"[X] Error extracting evidence from {file_path}: {str(e)}")
+        print(f"[X] Error processing {file_path}: {str(e)}")
         import traceback
         traceback.print_exc()
         return False
 
 def test_directory(directory_path):
-    """Test extraction on common files in a directory."""
+    """Test extraction and claim generation on common files in a directory."""
     if not os.path.exists(directory_path):
         print(f"❌ Directory not found: {directory_path}")
         return
@@ -108,14 +153,14 @@ def test_directory(directory_path):
         test_single_file(file_path, file_type)
 
 def interactive_mode():
-    """Interactive mode for testing individual files."""
-    print("\n[*] INTERACTIVE EVIDENCE EXTRACTION TESTER")
-    print("=" * 50)
+    """Interactive mode for testing evidence extraction and claim generation."""
+    print("\n[*] INTERACTIVE EVIDENCE EXTRACTION & CLAIM GENERATION TESTER")
+    print("=" * 65)
     
     while True:
         print("\nOptions:")
-        print("1. Test a single file")
-        print("2. Test all files in a directory")
+        print("1. Test a single file (extract evidence + generate claims)")
+        print("2. Test all files in a directory (extract evidence + generate claims)")
         print("3. Quit")
         
         choice = input("\nEnter your choice (1-3): ").strip()
@@ -153,7 +198,7 @@ def interactive_mode():
             print("[X] Invalid choice")
 
 def main():
-    """Main function - handle command line arguments or start interactive mode."""
+    """Main function - handle command line arguments or start interactive mode for evidence extraction and claim generation."""
     if len(sys.argv) == 1:
         # No arguments - start interactive mode
         interactive_mode()
@@ -182,6 +227,8 @@ def main():
         print("  python backend/app/test/test_extract_evidence.py <directory>        # Test directory")
         print("")
         print("File types: README, API_SPEC, TEST")
+        print("")
+        print("Note: This will extract evidence AND generate claims from that evidence.")
 
 if __name__ == "__main__":
     main()
