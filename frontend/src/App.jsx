@@ -4,6 +4,7 @@ import FileUploadZone from './components/FileUploadZone';
 import AnalysisResults from './components/AnalysisResults';
 import Header from './components/Header';
 import { Upload, FileText, AlertTriangle, CheckCircle } from 'lucide-react';
+import API_BASE from './config';
 
 function App() {
   const [files, setFiles] = useState({
@@ -84,7 +85,7 @@ function App() {
 
       // Call backend API
       console.log('🚀 Sending files to backend API...');
-      const response = await fetch('http://localhost:8000/api/analyze', {
+      const response = await fetch(`${API_BASE}/api/analyze`, {
         method: 'POST',
         body: formData,
       });
@@ -105,7 +106,7 @@ function App() {
       
       // Check if it's a network error
       if (err.message.includes('fetch')) {
-        setError('Cannot connect to analysis server. Make sure the backend is running on localhost:8000');
+        setError(`Cannot connect to analysis server. Make sure the backend is running at ${API_BASE}`);
       } else {
         setError(`Analysis failed: ${err.message}`);
       }
